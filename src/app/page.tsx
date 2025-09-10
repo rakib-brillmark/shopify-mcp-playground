@@ -1,103 +1,101 @@
-import Image from "next/image";
+"use client"
 
-export default function Home() {
+import React from 'react'
+import JsonViewer from "@/components/json-highlighter"
+import { useState } from "react"
+
+import { SearchShopCatalog } from "@/components/api-components/search-shop-catalog"
+import { GetCart } from "@/components/api-components/get-cart"
+import { UpdateCart } from "@/components/api-components/update-cart"
+import { SearchPoliciesFaqs } from "@/components/api-components/search-policies-faqs"
+import { GetProductDetails } from "@/components/api-components/get-product-details"
+import { Button } from "@/components/ui/button"
+
+
+const MCPToolComponents = () => {
+  const [selectedApi, setSelectedApi] = useState<string>("search_shop_catalog")
+  const [jsonResponse, setJsonResponse] = useState<any>(null)
+
+  const apiEndpoints = [
+    { id: "search_shop_catalog", label: "Search Shop Catalog" },
+    { id: "get_cart", label: "Get Cart" },
+    { id: "update_cart", label: "Update Cart" },
+    { id: "search_shop_policies_and_faqs", label: "Search Policies & FAQs" },
+    { id: "get_product_details", label: "Get Product Details" },
+  ]
+
+  const handleApiCall = async (apiId: string) => {
+    setSelectedApi(apiId)
+    // Removed automatic clearing of response when switching endpoints
+    // setJsonResponse(null) // Clear previous response
+  }
+
+  const handleApiResponse = (data: any) => {
+    setJsonResponse(data)
+  }
+
+  const renderApiComponent = () => {
+    const componentProps = { onApiCall: handleApiResponse }
+
+    switch (selectedApi) {
+      case "search_shop_catalog":
+        return <SearchShopCatalog {...componentProps} />
+      case "get_cart":
+        return <GetCart {...componentProps} />
+      case "update_cart":
+        return <UpdateCart {...componentProps} />
+      case "search_shop_policies_and_faqs":
+        return <SearchPoliciesFaqs {...componentProps} />
+      case "get_product_details":
+        return <GetProductDetails {...componentProps} />
+      default:
+        return null
+    }
+  }
+
+
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="flex h-[calc(100vh-73px)]">
+      {/* Left Side - API Controls */}
+      <div className="w-1/2 border-border p-6">
+        <div className="space-y-4">
+          <h2 className="text-lg font-semibold text-foreground">MCP Tools</h2>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          {/* API Buttons Row */}
+          <div className="flex flex-wrap gap-2 min-h-[40px]">
+            {apiEndpoints.map((endpoint) => (
+              <Button
+                key={endpoint.id}
+                variant={selectedApi === endpoint.id ? "default" : "outline"}
+                onClick={() => handleApiCall(endpoint.id)}
+                className="text-sm whitespace-nowrap"
+              >
+                {endpoint.label}
+              </Button>
+            ))}
+          </div>
+
+          <div className="mt-6 min-h-[400px]">{renderApiComponent()}</div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
+
+      {/* Right Side - JSON Response */}
+      <div className="w-1/2 p-6">
+        <div className="space-y-4">
+          <h2 className="text-lg font-semibold text-foreground">Response</h2>
+
+          {jsonResponse ? (
+            <JsonViewer data={jsonResponse} />
+          ) : (
+            <div className="flex items-center h-full text-muted-foreground">
+              <p>Select an API endpoint and submit a request to see the response here</p>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
-  );
+  )
 }
+
+export default MCPToolComponents
